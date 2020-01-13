@@ -18,7 +18,7 @@ You can easily design a Facebook like Friend System.
 First, install the package through Composer.
 
 ```php
-composer require hootlex/laravel-friendships
+composer require elitedeveloper/laravel-friends
 ```
 
 If you are using Laravel < 5.5, you need to add Hootlex\Friendships\FriendshipsServiceProvider to your `config/app.php` providers array:
