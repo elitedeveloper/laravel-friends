@@ -6,6 +6,7 @@ use Elitedeveloper\Friendships\Models\Friendship;
 use Elitedeveloper\Friendships\Models\FriendFriendshipGroups;
 use Elitedeveloper\Friendships\Status;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 
 /**
@@ -92,7 +93,6 @@ trait Friendable
         $updated = $this->findFriendship($recipient)->whereRecipient($this)->update([
             'status' => Status::ACCEPTED,
         ]);
-
         Event::dispatch('friendships.accepted', [$this, $recipient]);
       
         return $updated;
@@ -250,7 +250,14 @@ trait Friendable
      */
     public function getAcceptedFriendships($groupSlug = '')
     {
-        return $this->findFriendships(Status::ACCEPTED, $groupSlug)->get();
+        $data =  $this->findFriendships(Status::ACCEPTED, $groupSlug)
+        ->select('sender_id', 'recipient_id')
+        ->get();
+        $data = collect($data->toArray())->flatten()->unique()->all();
+        $index = array_search($this->id, $data);
+        unset($data[$index]); 
+        $data = collect($data)->flatten()->unique()->all();
+        return $data;
     }
 
     /**
