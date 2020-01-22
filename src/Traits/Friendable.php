@@ -260,6 +260,30 @@ trait Friendable
         return $data;
     }
 
+    public function getFollowing($groupSlug = ''){
+        $query = Friendship::where(function ($query) {
+            $query->where(function ($q) {
+                $q->whereSender($this);
+            });
+        })->select('recipient_id');
+        $data = $query->where('status', Status::ACCEPTED)->get();
+        $data = collect($data->toArray())->flatten()->unique()->all(); 
+        $data = collect($data)->flatten()->unique()->all();
+        return $data;
+    }
+
+    public function getFollowers($groupSlug = ''){
+        $query = Friendship::where(function ($query) {
+            $query->where(function ($q) {
+                $q->whereRecipient($this);
+            });
+        })->select('sender_id');
+        $data = $query->where('status', Status::ACCEPTED)->get();
+        $data = collect($data->toArray())->flatten()->unique()->all(); 
+        $data = collect($data)->flatten()->unique()->all();
+        return $data;
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Collection|Friendship[]
      *
